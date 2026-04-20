@@ -169,15 +169,12 @@ function getTeamListInfoByClassid($optype=0,$params="",$pageNum=50,$page=1){
     $livedata = $objmatch->getTeamListInfoById($optype,$params,$pageNum,$page);
     return $livedata;
 }
-
-
-
-
-
-
-
-
-
+//-------------------2026-04-20------------------------------
+function getMatchInfobyTeacmName($teamname,$timestr){
+    $objmatch = new PinMatchTeam();
+    $livedata = $objmatch->getMatchInfobyTeacmName($teamname,$timestr);
+    return $livedata;
+}
 
 
 //--------------------------------end-----------------------

@@ -135,5 +135,28 @@ class PinMatchTeam {
 
     }
 
+    //通过球队名称获取所在联赛列表
+    public function getMatchInfobyTeacmName($teamname,$timestr){
+        $cachekey = explode("%20", $timestr);
+        $cachekey= "qiudui_matchkey:".$teamname.'_time:'.$cachekey[0];
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $cachetime =3600;
+        $datajson = $redis->get($cachekey);
+        $datajson="";
+        if(!empty($datajson)){
+            $hddata = json_decode($datajson, true);
+        }else{
+            $url = $this->dburl;
+            $url = $url."/team.php?typepy={$teamname}&time={$timestr}";
+            $jsondata =  $this->sendGetUrl($url);
+            $data = json_decode($jsondata, true);
+            $hddata = $this->groupMatchesByDate($data);
+            $cachdata = json_encode($hddata);
+            $redis->set($cachekey, $cachdata, $cachetime); // 3600
+        }
+        return $hddata;
+    }
+
     
 }
