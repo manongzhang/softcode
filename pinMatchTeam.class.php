@@ -150,10 +150,8 @@ class PinMatchTeam {
             $url = $this->dburl;
             $url = $url."/team.php?typepy={$teamname}&time={$timestr}";
             $jsondata =  $this->sendGetUrl($url);
-            $data = json_decode($jsondata, true);
-            $hddata = $this->groupMatchesByDate($data);
-            $cachdata = json_encode($hddata);
-            $redis->set($cachekey, $cachdata, $cachetime); // 3600
+            $redis->set($cachekey, $jsondata, $cachetime); // 3600
+            $hddata = json_decode($jsondata, true);
         }
         return $hddata;
     }
