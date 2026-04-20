@@ -1,0 +1,139 @@
+<?php
+/*
+   获取联赛对应比赛
+*/
+class PinMatchTeam {
+    public $timestr;//时间
+    public $typepy; //联赛类型数组形式
+    public $data;
+    public function __construct(){
+        $this->dburl = 'https://www.xdwine.com/dataapi';
+        $this->timestr = $timestr;
+        $this->typepy = $typepy;
+    }
+    //获取联赛信息
+    public function getMatchInfo($matchtype,$timestr){
+        $cachekey = explode("%20", $timestr);
+        $cachekey= "zibodata_matchkey:".$matchtype.'_time:'.$cachekey[0];
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $cachetime =3600;
+        $datajson = $redis->get($cachekey);
+        $datajson="";
+        if(!empty($datajson)){
+            $hddata = json_decode($datajson, true);
+        }else{
+            $url = $this->dburl;
+            $url = $url."/zhibo.php?typepy={$matchtype}&time={$timestr}";
+            $jsondata =  $this->sendGetUrl($url);
+            $data = json_decode($jsondata, true);
+            $hddata = $this->groupMatchesByDate($data);
+            $cachdata = json_encode($hddata);
+            $redis->set($cachekey, $cachdata, $cachetime); // 3600
+        }
+        return $hddata;
+    }
+
+
+    private function groupMatchesByDate($data) {
+        $grouped = [];
+        // 检查数据格式是否正确
+        if (!isset($data['data']) || !is_array($data['data'])) {
+            return $grouped;
+        }
+        foreach ($data['data'] as $match) {
+            // 提取日期部分（Y-m-d格式）
+            if (isset($match['matchtime'])) {
+                $date = substr($match['matchtime'], 0, 10);
+                
+                // 将当前比赛添加到对应日期的分组中
+                $grouped[$date][] = $match;
+            }
+        }
+        ksort($grouped, SORT_REGULAR);
+        $result = $this->sortByOnclickDesc($grouped);
+        $result = $this->sortByMatchtimeAsc($result);
+        return $result;
+    }
+
+    private function sortByOnclickDesc($data) {
+        foreach ($data as $date => $matches) {
+            // 使用 usort 对每个日期下的比赛数组进行排序
+            usort($data[$date], function($a, $b) {
+                // 按 onclick 倒序排序（大的在前）
+                return $b['onclick'] - $a['onclick'];
+            });
+        }
+        return $data;
+    }
+
+
+    private function sortByMatchtimeAsc($data) {
+        foreach ($data as $date => $matches) {
+            // 使用 usort 对每个日期下的比赛数组按 matchtime 排序
+            usort($data[$date], function($a, $b) {
+                return strtotime($a['matchtime']) - strtotime($b['matchtime']);
+            });
+        }
+        return $data;
+    }
+
+    //发送get请求
+    private function sendGetUrl($url){
+        $headers = [
+            'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60); // 超时15秒
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $livedata = curl_exec($ch);
+        curl_close($ch);
+        return $livedata;
+    }
+
+    public function getMatchBiSai($params="",$type=0){
+        $time=Date("YmdH",time());
+        $cachekey= "saishi_:".'type:'.$type.'_params:'.$params.'_time:'.$time;
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $cachetime =3600;
+        $datajson = $redis->get($cachekey);
+        $datajson="";
+        if(!empty($datajson)){
+            $data = json_decode($datajson, true);
+        }else{
+            $url = $this->dburl . '/saishi.php?params='.$params.'&types='.$type;
+            $data= $this->sendGetUrl($url);
+            $redis->set($cachekey, $data, $cachetime); // 3600
+            $data = json_decode($data, true);
+        }
+        return $data;
+    }
+
+    //通过liansaiid获取球队列表信息
+    public function getTeamListInfoById($optype,$params,$pageNum=50,$page=1){
+       $time=Date("YmdH",time());
+        $cachekey= "qiudui_:".'optype:'.$optype.'_params:'.$params.'_time:'.$time.'_pagenum:'.$pageNum.'_pages:'.$page;
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $cachetime =3600;
+        $datajson = $redis->get($cachekey);
+        $datajson="";
+        if(!empty($datajson)){
+            $data = json_decode($datajson, true);
+        }else{
+            $url = $this->dburl . '/teamlist.php?optype='.$optype.'&params='.$params.'&pagenum='.$pageNum.'&pages='.$page;
+            $data= $this->sendGetUrl($url);
+            $redis->set($cachekey, $data, $cachetime);
+            $data = json_decode($data, true);
+        }
+        return $data;
+
+    }
+
+    
+}
