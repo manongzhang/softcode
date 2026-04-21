@@ -156,28 +156,32 @@ function getPinyouduoData_new($matchtype="",$timestr=""){
      return $livedata;
 }
 //------------------2026-04-17-------------------------------
-//
-//type=1 $params为联赛classid  type=1, $params=11|12|13
-//type=2 $params联赛名字拼音    type=2  $params=zuxiebei|zhongyi
+//table:wanmo_ecms_type
+//type=1 $params为  表里面classid  type=1, $params=11|12|13
+//type=2 $params为  表里面matchpy  type=2  $params=zuxiebei|zhongyi
 function getMatchBiSaiByClassid($params="",$type=0,$pageNum=50,$page=1){
     $objmatch = new PinMatchTeam();
     $livedata = $objmatch->getMatchBiSai($params,$type,$pageNum,$page);
     return $livedata;
 }
-
+//
 //获取球队信息
+//table:wanmo_ecms_team
+//$optype =1  $param=|123|456|789   查询表 字段  classid
+//$optype =2  $param=|zuxiebei|zhongyi|beijingguoan   查询表 字段  teampy 
 function getTeamListInfoByClassid($optype=0,$params="",$pageNum=50,$page=1){
     $objmatch = new PinMatchTeam();
     $livedata = $objmatch->getTeamListInfoById($optype,$params,$pageNum,$page);
     return $livedata;
 }
 //-------------------2026-04-20------------------------------
+//table:wanmo_ecms_team
+//teamname 球队名称  查询表字段 zdpy = or kdpy 
 function getMatchInfobyTeacmName($teamname,$timestr){
     $objmatch = new PinMatchTeam();
     $livedata = $objmatch->getMatchInfobyTeacmName($teamname,$timestr);
     return $livedata;
 }
-
 
 //--------------------------------end-----------------------
 
