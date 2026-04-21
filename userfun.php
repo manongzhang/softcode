@@ -1,10 +1,11 @@
 <?php
 //---------------------------用户自定义标签函数文件
 require_once('pinyouduo.class.php');
-require_once('pinMatchTeam.class.php');//通过联赛参数获取联赛下的比赛数据
+require_once('pinMatchTeam.class.php');//联赛相关数据
 require_once('special.class.php');
-require_once('word.class.php');
-require_once('team.class.php');
+require_once('word.class.php');//词条相关接口
+require_once('team.class.php');//球队相关接口
+require_once('Newword.class.php');//词条新接口
 
 function getPinyouduoData($timestr, $typepy='', $classid=0, $id=0, $num=0, $zu_id=0){
     $pinyouduo = new Pinyouduo($timestr, $typepy, $classid, $id, 1, $num, $zu_id);
@@ -185,13 +186,13 @@ function getMatchInfobyTeacmName($teamname,$timestr){
 
 //获取词条列表信息
 function getWordListInfo($pages=1,$pagenum=50){
-    $objmatch = new WordData();
+    $objmatch = new NewWrod();
     $livedata = $objmatch->getWordList($pages,$pagenum);
     return $livedata;
 }
 //获取词条内容详情
 function getWordTextInfo($id){
-    $objmatch = new WordData();
+    $objmatch = new NewWrod();
     $livedata = $objmatch->getWordContent($id);
     return $livedata;
 }
