@@ -132,6 +132,25 @@ class WordData {
         }
         return $data;
     }
+    //获取信息内容
+    public function getWordContent($id){
+        $cachekey = 'id_content:id_' . $id;
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $cachetime =3600*3;
+        $datajson = $redis->get($cachekey);
+        // $datajson="";
+        if(!empty($datajson)){
+            $data = json_decode($datajson, true);
+        }else{
+            $url = $url = $this->wordsiteurl . '/dataapi/NewWordInfoApi.php?id=' . $id;
+            $dataJson = $this->sendGetUrl($url);
+            $redis->set($cachekey, $dataJson,$cachetime); 
+            $data = json_decode($dataJson, true);
+
+        }
+        return $data;
+    }
 
     private function sendGetUrl($url){
         $headers = [

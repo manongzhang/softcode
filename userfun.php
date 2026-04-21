@@ -189,7 +189,12 @@ function getWordListInfo($pages=1,$pagenum=50){
     $livedata = $objmatch->getWordList($pages,$pagenum);
     return $livedata;
 }
-
+//获取词条内容详情
+function getWordTextInfo($id){
+    $objmatch = new WordData();
+    $livedata = $objmatch->getWordContent($id);
+    return $livedata;
+}
 //--------------------------------end-----------------------
 
 
