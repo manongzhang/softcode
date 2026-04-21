@@ -95,7 +95,7 @@ class PinMatchTeam {
         return $livedata;
     }
 
-    public function getMatchBiSai($params="",$type=0){
+    public function getMatchBiSai($params="",$type=0,$pageNum=50,$page=1){
         $time=Date("YmdH",time());
         $cachekey= "saishi_:".'type:'.$type.'_params:'.$params.'_time:'.$time;
         $redis = new Redis();
@@ -106,7 +106,7 @@ class PinMatchTeam {
         if(!empty($datajson)){
             $data = json_decode($datajson, true);
         }else{
-            $url = $this->dburl . '/saishi.php?params='.$params.'&types='.$type;
+            $url = $this->dburl . '/saishi.php?params='.$params.'&types='.$type.'&pagenum='.$pageNum.'&pages='.$page;
             $data= $this->sendGetUrl($url);
             $redis->set($cachekey, $data, $cachetime); // 3600
             $data = json_decode($data, true);

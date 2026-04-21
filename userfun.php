@@ -156,10 +156,12 @@ function getPinyouduoData_new($matchtype="",$timestr=""){
      return $livedata;
 }
 //------------------2026-04-17-------------------------------
-//获取联赛信息 classid=数据为篮球=16，足球=17，热门赛事=hot=获取后台推荐的比赛
-function getMatchBiSaiByClassid($params="",$type=0){
+//
+//type=1 $params为联赛classid  type=1, $params=11|12|13
+//type=2 $params联赛名字拼音    type=2  $params=zuxiebei|zhongyi
+function getMatchBiSaiByClassid($params="",$type=0,$pageNum=50,$page=1){
     $objmatch = new PinMatchTeam();
-    $livedata = $objmatch->getMatchBiSai($params,$type);
+    $livedata = $objmatch->getMatchBiSai($params,$type,$pageNum,$page);
     return $livedata;
 }
 
