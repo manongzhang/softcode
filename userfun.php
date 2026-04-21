@@ -183,6 +183,13 @@ function getMatchInfobyTeacmName($teamname,$timestr){
     return $livedata;
 }
 
+//获取词条列表信息
+function getWordListInfo($pages=1,$pagenum=50){
+    $objmatch = new WordData();
+    $livedata = $objmatch->getWordList($pages,$pagenum);
+    return $livedata;
+}
+
 //--------------------------------end-----------------------
 
 
