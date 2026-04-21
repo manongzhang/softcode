@@ -1,5 +1,0 @@
-$page = 1;
-$pagenum=50;
-$infos = getWordListInfo($page,$pagenum);
-
-var_dump($infos);
