@@ -4,17 +4,22 @@ $pagenum=50;
 $infos = getWordListInfo($page,$pagenum);
 var_dump($infos);
 =================================================================================
-2、#批量获取赛事信息
+2、获取词条详情
+$id = 16;
+$content = getWordTextInfo($id);
+var_dump($content);
+=================================================================================
+3、#批量获取赛事信息
 getMatchBiSaiByClassid(params="",$type=0,$pageNum=50,$page=1);
 $type=1,$params为  表里面classid 后台创建栏目id         例子:getMatchBiSaiByClassid(16|17|18,1,50,1);  
 $type=2 $params为  表里面matchpy 联赛名字拼音           例子:getMatchBiSaiByClassid(zuxiebei|zhongyi,2,50,1);
 ===================================================================================
-3、#批量获取球队信息
+4、#批量获取球队信息
 getTeamListInfoByClassid(optype=0,params="",$pageNum=50,$page=1);  
 $optype=1,$param=classid后台创建栏目id   例子:getTeamListInfoByClassid(1,params=16|17|18,$pageNum=50,1);
-$optype=2,$param=teampy球队名字拼音     例子:getTeamListInfoByClassid(2,params=zuxiebei|zhongyi|beijingguoan,$pageNum=50,1);
+$optype=2,$param=teampy球队名字拼音     例子:getTeamListInfoByClassid(2,params=zuxiebei|zhongyi|beij,$pageNum=50,1);
 ===================================================================================
-4、批量获取球队所在联赛
+5、批量获取球队所在联赛
 getMatchInfobyTeacmName($teamname,$timestr)   
 $teamname="nba|cba"  $timestr="2026-03-09%2012:45:56";
 例子:getMatchInfobyTeacmName($teamname,$timestr);
