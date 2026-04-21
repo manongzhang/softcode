@@ -124,7 +124,7 @@ class WordData {
         if(!empty($datajson)){
             $data = json_decode($datajson, true);
         }else{
-            $url = $url = $this->wordsiteurl . '/dataapi/wordApi.php?pages='.$pages.'&pagenum='.$pagenum;
+            $url = $url = $this->wordsiteurl . '/dataapi/NewwordApi.php?pages='.$pages.'&pagenum='.$pagenum;
             $dataJson = $this->sendGetUrl($url);
             $redis->set($cachekey, $dataJson,$cachetime); 
             $data = json_decode($dataJson, true);
