@@ -163,6 +163,21 @@ function getPinyouduoData_new($matchtype="",$timestr=""){
 function getMatchBiSaiByClassid($params="",$type=0,$pageNum=50,$page=1){
     $objmatch = new PinMatchTeam();
     $livedata = $objmatch->getMatchBiSai($params,$type,$pageNum,$page);
+    if($type==2){
+        if(strpos($params,"|")){
+            $newRuleArr=[];
+            $baseRule=explode("|",$params);
+            $handleArr = $livedata['data'];
+            $orderData = array_combine(array_column($handleArr, 'matchtypepy'), $handleArr);
+            $result = [];
+            foreach ($baseRule as $key) {
+                if (isset($orderData[$key])) {
+                    $result[] = $orderData[$key];
+                }
+            }
+            $livedata['data']=$result;
+        }
+    }
     return $livedata;
 }
 //
