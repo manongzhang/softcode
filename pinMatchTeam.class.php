@@ -19,7 +19,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        // $datajson="";
+        $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -51,33 +51,8 @@ class PinMatchTeam {
             }
         }
         ksort($grouped, SORT_REGULAR);
-        $result = $this->sortByMatchtimeAsc($result);
-        $result = $this->sortByOnclickDesc($grouped);
-        return $result;
+        return $grouped;
     }
-
-    private function sortByOnclickDesc($data) {
-        foreach ($data as $date => $matches) {
-            // 使用 usort 对每个日期下的比赛数组进行排序
-            usort($data[$date], function($a, $b) {
-                // 按 onclick 倒序排序（大的在前）
-                return $b['onclick'] - $a['onclick'];
-            });
-        }
-        return $data;
-    }
-
-
-    private function sortByMatchtimeAsc($data) {
-        foreach ($data as $date => $matches) {
-            // 使用 usort 对每个日期下的比赛数组按 matchtime 排序
-            usort($data[$date], function($a, $b) {
-                return strtotime($a['matchtime']) - strtotime($b['matchtime']);
-            });
-        }
-        return $data;
-    }
-
     //发送get请求
     private function sendGetUrl($url){
         $headers = [
