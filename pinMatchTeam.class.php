@@ -19,7 +19,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        $datajson="";
+        // $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -51,8 +51,8 @@ class PinMatchTeam {
             }
         }
         ksort($grouped, SORT_REGULAR);
-        $result = $this->sortByOnclickDesc($grouped);
         $result = $this->sortByMatchtimeAsc($result);
+        $result = $this->sortByOnclickDesc($grouped);
         return $result;
     }
 
@@ -122,7 +122,6 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        $datajson="";
         if(!empty($datajson)){
             $data = json_decode($datajson, true);
         }else{
@@ -143,7 +142,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        $datajson="";
+        //$datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
