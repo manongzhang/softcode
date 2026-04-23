@@ -156,6 +156,7 @@ function getPinyouduoData_new($matchtype="",$timestr=""){
      $livedata = $objmatch->getMatchInfo( $matchtype,$timestr);
      return $livedata;
 }
+
 //------------------2026-04-17-------------------------------
 //table:wanmo_ecms_type
 //type=1 $params为  表里面classid  type=1, $params=11|12|13
