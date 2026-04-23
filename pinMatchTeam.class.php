@@ -20,7 +20,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        // $datajson="";
+        $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -40,7 +40,8 @@ class PinMatchTeam {
     //检查数据时间篮球默认三个小时,足球提前2小时
     private function checkTime($data,$timestr){
         $timestr =str_replace("%20","",$timestr);
-        $privTwoTime = strtotime($timestr)-3600*2;
+        $privTwoTime = strtotime($timestr)-9600;//提前9600
+        //$privTwoTime=0;
         foreach($data as &$items){
             foreach($items as $kk=> &$vv){
                 if($vv["classid"] == 1){//足球
