@@ -11,16 +11,16 @@ class PinMatchTeam {
         $this->timestr = $timestr;
         $this->typepy = $typepy;
     }
-    //获取联赛信息
+    //篮球直播数据接口
     public function getMatchInfo($matchtype,$timestr){
         $cachekey = explode("%20", $timestr);
         $hour = explode(":",$cachekey[1])[0];
-        $cachekey= "zibodata_matchkey:".$matchtype.'_time:'.$cachekey[0]."H:$hour";
+        $cachekey= "lanqiu_zibodata_matchkey:".$matchtype.'_time:'.$cachekey[0]."H:$hour";
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        //$datajson="";
+        $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -29,12 +29,31 @@ class PinMatchTeam {
             $jsondata =  $this->sendGetUrl($url);
             $data = json_decode($jsondata, true);
             $hddata = $this->groupMatchesByDate($data);
+            $hddata = $this->checkTime($hddata,$timestr);
             $cachdata = json_encode($hddata);
             $redis->set($cachekey, $cachdata, $cachetime); // 3600
         }
         return $hddata;
     }
 
+
+    //检查数据时间篮球默认三个小时,足球提前2小时
+    private function checkTime($data,$timestr){
+        $timestr =str_replace("%20","",$timestr);
+        $privTwoTime = strtotime($timestr)-3600*2;
+        foreach($data as &$items){
+            foreach($items as $kk=> &$vv){
+                if($vv["classid"] == 1){//足球
+                    $matchtime = strtotime($vv["matchtime"]);//足球开始时间
+                    if($privTwoTime > $matchtime){
+                        unset($items[$kk]);
+                    }
+                }
+                
+            }
+        }
+        return $data;
+    }
 
     private function groupMatchesByDate($data) {
         $grouped = [];
@@ -54,6 +73,14 @@ class PinMatchTeam {
         ksort($grouped, SORT_REGULAR);
         return $grouped;
     }
+
+
+
+
+
+
+
+
     //发送get请求
     private function sendGetUrl($url){
         $headers = [
