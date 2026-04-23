@@ -14,12 +14,13 @@ class PinMatchTeam {
     //获取联赛信息
     public function getMatchInfo($matchtype,$timestr){
         $cachekey = explode("%20", $timestr);
-        $cachekey= "zibodata_matchkey:".$matchtype.'_time:'.$cachekey[0];
+        $hour = explode(":",$cachekey[1])[0];
+        $cachekey= "zibodata_matchkey:".$matchtype.'_time:'.$cachekey[0]."H:$hour";
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        $datajson="";
+        //$datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -117,7 +118,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        //$datajson="";
+        // $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
