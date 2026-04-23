@@ -20,7 +20,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        $datajson="";
+        // $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
