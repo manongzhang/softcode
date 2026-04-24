@@ -166,6 +166,7 @@ function getMatchBiSaiByClassid($params="",$type=0,$pageNum=50,$page=1){
     $livedata = $objmatch->getMatchBiSai($params,$type,$pageNum,$page);
     if($type==2){
         if(strpos($params,"|")){
+            
             $newRuleArr=[];
             $baseRule=explode("|",$params);
             $handleArr = $livedata['data'];
@@ -212,6 +213,15 @@ function getWordTextInfo($id){
     $livedata = $objmatch->getWordContent($id);
     return $livedata;
 }
+
+
+function qiuduiFindMatch($qiuduiname,$timestr){
+    $objmatch = new PinMatchTeam();
+    $livedata = $objmatch->qiuduiFindMatch($qiuduiname,$timestr);
+    return $livedata;
+}
+
+
 //--------------------------------end-----------------------
 
 

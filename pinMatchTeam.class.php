@@ -20,7 +20,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        // $datajson="";
+        $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -35,6 +35,29 @@ class PinMatchTeam {
         }
         return $hddata;
     }
+
+    //通过球队找联赛
+    public function qiuduiFindMatch($qiuname,$timestr){
+        $cachekey = explode("%20", $timestr);
+        $hour = explode(":",$cachekey[1])[0];
+        $cachekey= "qiudui_find_match_matchkey:".$qiuname.'_time:'.$cachekey[0]."H:$hour";
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        $cachetime =600;
+        $datajson = $redis->get($cachekey);
+        if(!empty($datajson)){
+            $hddata = json_decode($datajson, true);
+        }else{
+            $url = $this->dburl;
+            $url = $url."/teamfindmatch.php?qiiuname={$qiuname}&time={$timestr}";
+            $jsondata =  $this->sendGetUrl($url);
+            $redis->set($cachekey, $jsondata, $cachetime); // 3600
+            $hddata = json_decode($jsondata, true);
+        }
+        return $hddata;
+    }
+
+
 
 
     //检查数据时间篮球默认三个小时,足球提前2小时
