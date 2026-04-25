@@ -20,7 +20,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        $datajson="";
+        //$datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -28,12 +28,27 @@ class PinMatchTeam {
             $url = $url."/zhibo.php?typepy={$matchtype}&time={$timestr}";
             $jsondata =  $this->sendGetUrl($url);
             $data = json_decode($jsondata, true);
+
+
             $hddata = $this->groupMatchesByDate($data);
             $hddata = $this->checkTime($hddata,$timestr);
+            $hddata = $this->sortMatchesByOnclickDesc($hddata);
             $cachdata = json_encode($hddata);
             $redis->set($cachekey, $cachdata, $cachetime); // 3600
         }
         return $hddata;
+    }
+
+    private function sortMatchesByOnclickDesc($data) {
+            foreach ($data as $date => $matches) {
+                // 使用 usort 对每个日期下的比赛数组按 onclick 倒序排序
+                usort($matches, function($a, $b) {
+                    // onclick 值高的排在前面（倒序）
+                    return $b['onclick'] - $a['onclick'];
+                });
+                $data[$date] = $matches;
+            }
+            return $data;
     }
 
     //通过球队找联赛
