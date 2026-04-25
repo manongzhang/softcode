@@ -20,7 +20,7 @@ class PinMatchTeam {
         $redis->connect('127.0.0.1', 6379);
         $cachetime =3600;
         $datajson = $redis->get($cachekey);
-        //$datajson="";
+        $datajson="";
         if(!empty($datajson)){
             $hddata = json_decode($datajson, true);
         }else{
@@ -32,23 +32,43 @@ class PinMatchTeam {
 
             $hddata = $this->groupMatchesByDate($data);
             $hddata = $this->checkTime($hddata,$timestr);
-            $hddata = $this->sortMatchesByOnclickDesc($hddata);
+            $hddata = $this->sortMatchesByOnclickAndTime($hddata);
             $cachdata = json_encode($hddata);
             $redis->set($cachekey, $cachdata, $cachetime); // 3600
         }
         return $hddata;
     }
 
-    private function sortMatchesByOnclickDesc($data) {
-            foreach ($data as $date => $matches) {
-                // 使用 usort 对每个日期下的比赛数组按 onclick 倒序排序
-                usort($matches, function($a, $b) {
-                    // onclick 值高的排在前面（倒序）
-                    return $b['onclick'] - $a['onclick'];
-                });
-                $data[$date] = $matches;
+    public function sortMatchesByOnclickAndTime($data) {
+        // 收集所有比赛到一个一维数组
+        $allMatches = [];
+        foreach ($data as $date => $matches) {
+            foreach ($matches as $match) {
+                $match['date'] = $date; // 保存日期信息，便于后续重建
+                $allMatches[] = $match;
             }
-            return $data;
+        }
+        
+        // 使用 usort 进行排序
+        usort($allMatches, function($a, $b) {
+            // 按 onclick 倒序
+            if ($a['onclick'] != $b['onclick']) {
+                return $b['onclick'] - $a['onclick'];
+            }
+            
+            // 相同 onclick，按 matchtime 正序
+            return strtotime($a['matchtime']) - strtotime($b['matchtime']);
+        });
+        
+        // 重新构建原始数据结构（按日期分组）
+        $sortedData = [];
+        foreach ($allMatches as $match) {
+            $date = $match['date'];
+            unset($match['date']); // 移除临时添加的日期字段
+            $sortedData[$date][] = $match;
+        }
+        
+        return $sortedData;
     }
 
     //通过球队找联赛
